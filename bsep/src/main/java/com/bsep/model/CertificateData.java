@@ -7,107 +7,93 @@ import javax.persistence.*;
 @Entity
 public class CertificateData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    @Column
-    protected int id;
+    private Long id;
 
-    @Column
-    @NotNull
-    protected int serialNumber;
+    private BigInteger serialNumber;
 
-    @Column(length = 2048)
-    @NotNull
-    protected String publicKey;
+    private PublicKey publicKey;
 
-    @Column
-    @NotNull
-    protected String commonName;
+    private X500Name x500Name;
 
-    @Column
-    protected String organization;
+    private Date validFrom;
 
-    @Column
-    protected String organizationalUnit;
+    private Date validUntil;
 
-    @Column
-    protected String country;
+    private boolean withdrawn;
 
-    @Column
-    protected String emailAddress;
 
-    public CertificateData(int serialNumber, String publicKey, String commonName, String organization, String organizationalUnit, String country, String emailAddress) {
+
+    public CertificateData() { }
+
+    public CertificateData(BigInteger serialNumber, PublicKey publicKey, X500Name x500Name, Date validFrom, Date validUntil){
         this.serialNumber = serialNumber;
         this.publicKey = publicKey;
-        this.commonName = commonName;
-        this.organization = organization;
-        this.organizationalUnit = organizationalUnit;
-        this.country = country;
-        this.emailAddress = emailAddress;
-    }
+        this.x500Name = x500Name;
+        this.validFrom=validFrom;
+        this.validUntil=validUntil;
+        this.withdrawn=false;
 
-
-    public CertificateData() {
 
     }
 
-    public int getId() {
-        return id;
+    public Long getId() {
+        return this.id;
     }
 
-    public int getSerialNumber() {
-        return serialNumber;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setSerialNumber(int serialNumber) {
+    public BigInteger getSerialNumber() {
+        return this.serialNumber;
+    }
+
+    public void setSerialNumber(BigInteger serialNumber) {
         this.serialNumber = serialNumber;
     }
 
-    public String getPublicKey() {
-        return publicKey;
+    public PublicKey getPublicKey() {
+        return this.publicKey;
     }
 
-    public void setPublicKey(String publicKey) {
+    public void setPublicKey(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
 
-    public String getCommonName() {
-        return commonName;
+
+    public X500Name getX500Name() {
+        return this.x500Name;
     }
 
-    public void setCommonName(String commonName) {
-        this.commonName = commonName;
+    public void setX500Name(X500Name X500Name) {
+        this.x500Name = X500Name;
     }
 
-    public String getOrganization() {
-        return organization;
+
+
+    public Date getValidFrom() {
+        return this.validFrom;
     }
 
-    public void setOrganization(String organization) {
-        this.organization = organization;
+    public void setValidFrom(Date validFrom) {
+        this.validFrom = validFrom;
     }
 
-    public String getOrganizationalUnit() {
-        return organizationalUnit;
+    public Date getValidUntil() {
+        return this.validUntil;
     }
 
-    public void setOrganizationalUnit(String organizationalUnit) {
-        this.organizationalUnit = organizationalUnit;
+    public void setValidUntil(Date validUntil) {
+        this.validUntil = validUntil;
     }
 
-    public String getCountry() {
-        return country;
+
+
+    public boolean isWithdrawn() {
+        return this.withdrawn;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getEmailAddress() {
-        return emailAddress;
-    }
-
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public void setWithdrawn(boolean withdrawn) {
+        this.withdrawn = withdrawn;
     }
 }

@@ -3,14 +3,25 @@ package com.bsep.model;
 import javax.persistence.Entity;
 
 @Entity
-public class Admin extends User{
+public class Admin{
+    private Long id;
 
-    private static final String role = "ADMIN";
+    private String username;
 
-    public Admin() {
+    private String password;
+
+    public Administrator(){
+
+
     }
 
-    public Admin(String email, String password, String fullName) {
-        super(email, password, fullName);
+    public String getUsername(){
+
+        return this.username;
+    }
+
+    public Long getId(){
+
+        return id;
     }
 }

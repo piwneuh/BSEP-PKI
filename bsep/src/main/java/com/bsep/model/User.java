@@ -8,69 +8,55 @@ import java.util.List;
 @Entity
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    @Column
-    protected int id;
+    private Long id;
 
-    @Column(unique = true)
-    @NotNull
-    protected String email;
+    private String name;
 
-    @Column
-    @NotNull
-    protected String password;
+    private String surname;
 
-    @Column
-    @NotNull
-    protected String fullName;
+    private String email;
 
-    @OneToMany(mappedBy = "user")
-    protected List<Certificate> certificates;
 
-    public User() {
+    public UserData() { }
+
+
+    public UserData(String name, String surname, String email){
+
+        this.name=name;
+        this.surname=surname;
+        this.email=email;
 
     }
 
-    public User(String email, String password, String fullName) {
-        this.email = email;
-        this.password = password;
-        this.fullName = fullName;
+    public Long getId() {
+        return this.id;
     }
 
-    public int getId() {
-        return id;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return this.surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     public String getEmail() {
-        return email;
+        return this.email;
     }
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public List<Certificate> getCertificates() {
-        return certificates;
-    }
-
-    public void setCertificates(List<Certificate> certificates) {
-        this.certificates = certificates;
     }
 }

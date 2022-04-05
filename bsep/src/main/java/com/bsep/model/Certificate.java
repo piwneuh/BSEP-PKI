@@ -8,109 +8,184 @@ import java.util.Date;
 @Entity
 public class Certificate {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    @Column
-    protected int id;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn
-    protected CertificateAuthority issuer;
-
-    @OneToOne
-    @JoinColumn
-    @NotNull
-    protected CertificateData certificateData;
-
-    @OneToOne(mappedBy = "certificate")
-    protected CertificateAuthority ca;
-
-    @ManyToOne
-    @JoinColumn
-    protected User user;
-
-    @Column
-    @NotNull
-    protected Date validFrom;
-
-    @Column
-    @NotNull
-    protected Date validTo;
-
-    @Column
-    protected String cerFileName;
-
-    public Certificate(CertificateAuthority issuer, CertificateData certificateData, CertificateAuthority ca, User user, Date validFrom, Date validTo, String cerFileName) {
-        this.issuer = issuer;
-        this.certificateData = certificateData;
-        this.ca = ca;
-        this.user = user;
-        this.validFrom = validFrom;
-        this.validTo = validTo;
-        this.cerFileName = cerFileName;
-    }
+    private CertificateData certificateData;
 
     public Certificate() {
-
     }
 
-    public int getId() {
-        return id;
+    public Long getId() {
+        return this.id;
     }
 
-    public CertificateAuthority getIssuer() {
-        return issuer;
-    }
-
-    public void setIssuer(CertificateAuthority issuer) {
-        this.issuer = issuer;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public CertificateData getCertificateData() {
-        return certificateData;
+        return this.certificateData;
     }
 
     public void setCertificateData(CertificateData certificateData) {
         this.certificateData = certificateData;
     }
 
-    public CertificateAuthority getCa() {
-        return ca;
+    @Override
+    public boolean hasUnsupportedCriticalExtension() {
+        // TODO Auto-generated method stub
+        return false;
     }
 
-    public void setCa(CertificateAuthority ca) {
-        this.ca = ca;
+    @Override
+    public Set<String> getCriticalExtensionOIDs() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public User getUser() {
-        return user;
+    @Override
+    public Set<String> getNonCriticalExtensionOIDs() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    @Override
+    public byte[] getExtensionValue(String oid) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public Date getValidFrom() {
-        return validFrom;
+    @Override
+    public void checkValidity() throws CertificateExpiredException, CertificateNotYetValidException {
+        // TODO Auto-generated method stub
+
     }
 
-    public void setValidFrom(Date validFrom) {
-        this.validFrom = validFrom;
+    @Override
+    public void checkValidity(Date date) throws CertificateExpiredException, CertificateNotYetValidException {
+        // TODO Auto-generated method stub
+
     }
 
-    public Date getValidTo() {
-        return validTo;
+    @Override
+    public int getVersion() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
-    public void setValidTo(Date validTo) {
-        this.validTo = validTo;
+    @Override
+    public BigInteger getSerialNumber() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public String getCerFileName() {
-        return cerFileName;
+    @Override
+    public Principal getIssuerDN() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public void setCerFileName(String cerFileName) {
-        this.cerFileName = cerFileName;
+    @Override
+    public Principal getSubjectDN() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Date getNotBefore() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Date getNotAfter() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public byte[] getTBSCertificate() throws CertificateEncodingException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public byte[] getSignature() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getSigAlgName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getSigAlgOID() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public byte[] getSigAlgParams() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean[] getIssuerUniqueID() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean[] getSubjectUniqueID() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean[] getKeyUsage() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public int getBasicConstraints() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public byte[] getEncoded() throws CertificateEncodingException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void verify(PublicKey key) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException,
+            NoSuchProviderException, SignatureException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void verify(PublicKey key, String sigProvider) throws CertificateException, NoSuchAlgorithmException,
+            InvalidKeyException, NoSuchProviderException, SignatureException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public PublicKey getPublicKey() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
