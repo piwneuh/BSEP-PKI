@@ -11,6 +11,7 @@ import javax.persistence.Id;
 @Getter
 @Setter
 public class Administrator{
+
     @Id
     private Long id;
 
@@ -26,4 +27,10 @@ public class Administrator{
     public Administrator(){
     }
 
+    public Administrator(Long id, String username, String password, UserRole role) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
 }

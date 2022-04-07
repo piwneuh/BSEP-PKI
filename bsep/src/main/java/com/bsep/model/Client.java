@@ -16,10 +16,13 @@ public class Client {
     private Long id;
 
     @Column
-    private String name;
+    private String username;
 
     @Column
-    private String surname;
+    private String password;
+
+    @Column
+    private String fullName;
 
     @Column
     private String email;
@@ -27,11 +30,14 @@ public class Client {
     @Column
     private UserRole role;
 
-    public Client() { }
+    public Client() {
+    }
 
-    public Client(String name, String surname, String email){
-        this.name=name;
-        this.surname=surname;
-        this.email=email;
+    public Client(String username, String password, String fullName, String email, UserRole role) {
+        this.username = username;
+        this.password = password;
+        this.fullName = fullName;
+        this.email = email;
+        this.role = role;
     }
 }
