@@ -3,8 +3,11 @@ package com.bsep.model;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
+import java.math.BigInteger;
+import java.security.PublicKey;
+import java.util.Date;
 
-@Entity
+
 public class CertificateData {
 
     private Long id;
@@ -13,7 +16,7 @@ public class CertificateData {
 
     private PublicKey publicKey;
 
-    private X500Name x500Name;
+    private String x500Name;
 
     private Date validFrom;
 
@@ -22,10 +25,9 @@ public class CertificateData {
     private boolean withdrawn;
 
 
-
     public CertificateData() { }
 
-    public CertificateData(BigInteger serialNumber, PublicKey publicKey, X500Name x500Name, Date validFrom, Date validUntil){
+    public CertificateData(BigInteger serialNumber, PublicKey publicKey, String x500Name, Date validFrom, Date validUntil){
         this.serialNumber = serialNumber;
         this.publicKey = publicKey;
         this.x500Name = x500Name;
@@ -61,11 +63,11 @@ public class CertificateData {
     }
 
 
-    public X500Name getX500Name() {
+    public String getX500Name() {
         return this.x500Name;
     }
 
-    public void setX500Name(X500Name X500Name) {
+    public void setX500Name(String X500Name) {
         this.x500Name = X500Name;
     }
 
