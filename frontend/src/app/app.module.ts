@@ -7,6 +7,7 @@ import { LoginComponent } from './login/login.component';
 import { AdminHomePageComponent } from './admin-home-page/admin-home-page.component';
 import { ClientHomePageComponent } from './client-home-page/client-home-page.component';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -20,6 +21,7 @@ import { FormsModule } from '@angular/forms';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
