@@ -1,6 +1,6 @@
 package com.bsep.model;
 
-public enum CARole {
+public enum CertType {
     ROOT,
     INTERMEDIATE,
     REGULAR

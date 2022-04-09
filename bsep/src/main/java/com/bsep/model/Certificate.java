@@ -1,33 +1,21 @@
 package com.bsep.model;
 
-import com.sun.istack.NotNull;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
 
-
+@Entity
+@Data
 public class Certificate {
 
-    private Long id;
+    @Id
+    private String serialNumber;
 
-    private CertificateData certificateData;
+    @Column
+    private CertType type;
 
-    public Certificate() {
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public CertificateData getCertificateData() {
-        return this.certificateData;
-    }
-
-    public void setCertificateData(CertificateData certificateData) {
-        this.certificateData = certificateData;
-    }
+    @Column
+    private boolean valid;
 }

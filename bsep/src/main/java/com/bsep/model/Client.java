@@ -33,7 +33,8 @@ public class Client {
     public Client() {
     }
 
-    public Client(String username, String password, String fullName, String email, UserRole role) {
+    public Client(Long id, String username, String password, String fullName, String email, UserRole role) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.fullName = fullName;
