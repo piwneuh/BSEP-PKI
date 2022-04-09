@@ -1,6 +1,6 @@
 package com.bsep.model;
 
-import com.sun.istack.NotNull;
+import  com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
