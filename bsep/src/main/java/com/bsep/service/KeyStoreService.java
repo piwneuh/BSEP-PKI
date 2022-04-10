@@ -3,6 +3,7 @@ package com.bsep.service;
 import com.bsep.model.IssuerData;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+import org.springframework.stereotype.Service;
 
 
 import java.io.*;
@@ -11,7 +12,9 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.util.Enumeration;
 
+@Service
 public class KeyStoreService {
     public KeyStoreService() {
         try {
@@ -127,6 +130,57 @@ public class KeyStoreService {
         return null;
     }
 
+    public Enumeration<String> getAllAliases(String keyStoreFile, String keyStorePass) {
+        try {
+
+            KeyStore ks = KeyStore.getInstance("JKS", "SUN");
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
+            ks.load(in, keyStorePass.toCharArray());
+
+            return ks.aliases();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Certificate[] readCertificateChain(String keyStoreFile, String keyStorePass, String alias) {
+        try {
+
+            KeyStore ks = KeyStore.getInstance("JKS", "SUN");
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
+            ks.load(in, keyStorePass.toCharArray());
+
+            if(ks.isKeyEntry(alias)) {
+                Certificate[] certChain = ks.getCertificateChain(alias);
+                return certChain;
+            }
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
 
     //WRITER####################################################
@@ -166,9 +220,9 @@ public class KeyStoreService {
         }
     }
 
-    public void write(String alias, PrivateKey privateKey, char[] password, Certificate certificate) {
+    public void write(String alias, PrivateKey privateKey, char[] password, X509Certificate[] chain) {
         try {
-            keyStore.setKeyEntry(alias, privateKey, password, new Certificate[] {certificate});
+            keyStore.setKeyEntry(alias, privateKey, password, chain);
         } catch (KeyStoreException e) {
             e.printStackTrace();
         }

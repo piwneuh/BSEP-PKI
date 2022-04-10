@@ -16,4 +16,12 @@ public class SubjectData {
     private Date startDate;
     private Date endDate;
 
+    public SubjectData(PublicKey publicKey, X500Name x500name, String serialNumber, Date startDate, Date endDate) {
+        this.publicKey = publicKey;
+        this.x500name = x500name;
+        this.serialNumber = serialNumber;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
 }
