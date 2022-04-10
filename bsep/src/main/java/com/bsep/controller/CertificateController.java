@@ -1,20 +1,20 @@
 package com.bsep.controller;
 
 import com.bsep.dto.CertificateDTO;
+import com.bsep.dto.CertificateDetailsDTO;
 import com.bsep.model.SubjectData;
 import com.bsep.service.CertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateParsingException;
 
 @Controller
 @RequestMapping(value = "/api")
@@ -31,5 +31,11 @@ public class CertificateController {
             return ResponseEntity.status(HttpStatus.CREATED).build();
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @GetMapping(value="/getCertificateDetails/{serialNumber}", produces = "application/json")
+    public String getCertificateDetails(@PathVariable("serialNumber") String serialNumber) throws CertificateEncodingException, CertificateParsingException {
+        CertificateDetailsDTO asdasd = certificateService.getCertificateDetails(serialNumber);
+        return asdasd.getSubjectEmail();
     }
 }

@@ -1,6 +1,7 @@
 package com.bsep.service;
 
 import com.bsep.dto.CertificateDTO;
+import com.bsep.dto.CertificateDetailsDTO;
 import com.bsep.model.CertType;
 import com.bsep.model.CertificateNew;
 import com.bsep.model.IssuerData;
@@ -9,6 +10,7 @@ import com.bsep.repository.CertificateRepository;
 import com.bsep.repository.CertificatesWriter;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,7 @@ import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,10 +33,10 @@ public class CertificateService {
     private X509Certificate cert;
     private X509Certificate issuerCertificate;
     private String fileLocationCA = "keystore/keystoreCA.jks";
-    private String fileLocationINT = "keystore/keystoreINT.jks";
+    //private String fileLocationINT = "keystore/keystoreINT.jks";
     private String fileLocationEE = "keystore/keystoreEE.jks";
     private String passwordCA = "passwordCA";
-    private String passwordINT = "passwordINT";
+    //private String passwordINT = "passwordINT";
     private String passwordEE = "passwordEE";
 
 
@@ -226,5 +229,51 @@ public class CertificateService {
         Random randNum = new Random();
         int len = maxLimit.bitLength();
         return new BigInteger(len, randNum);
+    }
+
+    public CertificateDetailsDTO getCertificateDetails(String serialNumber) throws CertificateEncodingException, CertificateParsingException {
+
+        CertificateNew certDB = findCertificateNew(serialNumber);
+        X509Certificate cert;
+        if(certDB.isCa()) {
+            cert = (X509Certificate) store.findCertificateBySerialNumber(serialNumber, fileLocationCA, passwordCA);
+            if(cert != null) {
+                JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) cert);
+                Certificate[] chain = store.findCertificateChainBySerialNumber(serialNumber, fileLocationCA, passwordCA);
+                X509Certificate x509Cert;
+                Boolean isRoot;
+                if (chain.length == 1) { //if it is root then it doesn't have a parent
+                    x509Cert = (X509Certificate) chain[0];
+                    isRoot = true;
+                } else {
+                    x509Cert = (X509Certificate) chain[1];
+                    isRoot = false;
+                }
+
+                String issuerSerialNumber = x509Cert.getSerialNumber().toString();
+
+                CertificateDetailsDTO cddto = new CertificateDetailsDTO(certHolder, cert, issuerSerialNumber, isRoot);
+                return cddto;
+            }else{
+                return null;
+            }
+
+        }else{
+            cert = (X509Certificate) store.findCertificateBySerialNumber(serialNumber, fileLocationEE, passwordEE);
+            if(cert != null) {
+                JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) cert);
+                String issuerSerialNumber = certDB.getIssuerSerialNumber();
+                boolean isRoot = false;
+                CertificateDetailsDTO cddto = new CertificateDetailsDTO(certHolder, cert, issuerSerialNumber, isRoot);
+                return cddto;
+            }else{
+                return null;
+            }
+
+        }
+    }
+
+    public CertificateNew findCertificateNew(String serialNumber) {
+        return certificateRepository.findBySubjectSerialNumber(serialNumber);
     }
 }
