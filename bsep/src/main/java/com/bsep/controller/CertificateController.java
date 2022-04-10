@@ -7,6 +7,8 @@ import com.bsep.dto.RevocationDTO;
 import com.bsep.model.SubjectData;
 import com.bsep.service.CertificateService;
 import com.bsep.service.RevocationService;
+import net.bytebuddy.asm.Advice;
+import net.bytebuddy.implementation.bind.annotation.Origin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 
 @Controller
 @RequestMapping(value = "/api")
+@CrossOrigin(origins = "http://localhost:4200/")
 public class CertificateController {
 
     @Autowired
