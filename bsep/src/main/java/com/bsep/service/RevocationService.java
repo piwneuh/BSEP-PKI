@@ -3,6 +3,7 @@ package com.bsep.service;
 import com.bsep.dto.RevocationDTO;
 import com.bsep.model.CertificateNew;
 import com.bsep.model.Revocation;
+import com.bsep.repository.CertificateRepository;
 import com.bsep.repository.CertificatesWriter;
 import com.bsep.repository.RevocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ public class RevocationService {
 
     @Autowired
     private RevocationRepository revocationRepository;
+
+    @Autowired
+    private CertificateRepository certificateRepository;
 
     @Autowired
     private CertificatesWriter store;
@@ -36,6 +40,10 @@ public class RevocationService {
         }
 
         Revocation revocation = new Revocation(revocationDTO.getSerialNumber(), revocationDTO.getRevocationReason());
+        CertificateNew cert = certificateRepository.findBySubjectSerialNumber(revocationDTO.getSerialNumber());
+        cert.setRevoked(true);
+        certificateRepository.save(cert);
+
         revocationRepository.save(revocation);
         return false;
 
