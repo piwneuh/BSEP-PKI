@@ -1,5 +1,6 @@
 package com.bsep.controller;
 
+import com.bsep.dto.CertificateBasicDTO;
 import com.bsep.dto.CertificateDTO;
 import com.bsep.dto.CertificateDetailsDTO;
 import com.bsep.model.SubjectData;
@@ -15,6 +16,7 @@ import java.security.*;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping(value = "/api")
@@ -34,8 +36,17 @@ public class CertificateController {
     }
 
     @GetMapping(value="/getCertificateDetails/{serialNumber}", produces = "application/json")
-    public String getCertificateDetails(@PathVariable("serialNumber") String serialNumber) throws CertificateEncodingException, CertificateParsingException {
-        CertificateDetailsDTO asdasd = certificateService.getCertificateDetails(serialNumber);
-        return asdasd.getSubjectEmail();
+    public ResponseEntity<?> getCertificateDetails(@PathVariable("serialNumber") String serialNumber) throws CertificateEncodingException, CertificateParsingException {
+        return ResponseEntity.ok(certificateService.getCertificateDetails(serialNumber));
+    }
+
+    @GetMapping(value="/getAllCertificates", produces = "application/json")
+    public ResponseEntity<?> getAllCertificates() throws CertificateEncodingException, CertificateParsingException {
+        return ResponseEntity.ok(certificateService.getAllCertificates());
+    }
+
+    @GetMapping(value="/getAllCA", produces = "application/json")
+    public ResponseEntity<?> getAllCA() throws CertificateEncodingException, CertificateParsingException {
+        return ResponseEntity.ok(certificateService.getAllCA());
     }
 }

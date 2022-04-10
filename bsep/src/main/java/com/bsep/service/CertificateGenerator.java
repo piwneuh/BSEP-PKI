@@ -53,7 +53,7 @@ public class CertificateGenerator {
                     subjectData.getPublicKey());
 
             //Adding BasicConstraints for all
-            certGen.addExtension(Extension.basicConstraints, true, new BasicConstraints(certDTO.isBasicConstraints()));
+            certGen.addExtension(Extension.basicConstraints, true, new BasicConstraints(!certDTO.getCertificateType().equals(CertType.REGULAR)));
 
             //Adding KeyUsage for all
             int allKeyUsages = 0;

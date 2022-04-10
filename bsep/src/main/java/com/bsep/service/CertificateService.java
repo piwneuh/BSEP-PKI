@@ -1,7 +1,9 @@
 package com.bsep.service;
 
+import com.bsep.dto.CertificateBasicDTO;
 import com.bsep.dto.CertificateDTO;
 import com.bsep.dto.CertificateDetailsDTO;
+import com.bsep.dto.IssuerDTO;
 import com.bsep.model.CertType;
 import com.bsep.model.CertificateNew;
 import com.bsep.model.IssuerData;
@@ -16,15 +18,11 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.security.*;
+import java.security.cert.*;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateParsingException;
-import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class CertificateService {
@@ -275,5 +273,150 @@ public class CertificateService {
 
     public CertificateNew findCertificateNew(String serialNumber) {
         return certificateRepository.findBySubjectSerialNumber(serialNumber);
+    }
+
+    public ArrayList<CertificateBasicDTO> getAllCertificates() throws CertificateEncodingException {
+
+        //Svi CA se citaju
+        Enumeration<String> alisases = store.getAllAliases(fileLocationCA, passwordCA);
+        ArrayList<CertificateBasicDTO> certificateBasicDTOS = new ArrayList<>();
+
+        while (alisases.hasMoreElements()) {
+            Certificate c = store.findCertificateByAlias(alisases.nextElement(), fileLocationCA, passwordCA);
+            JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
+            certificateBasicDTOS.add(new CertificateBasicDTO(certHolder));
+
+        }
+
+        //Svi end-entity se citaju
+        alisases = store.getAllAliases(fileLocationEE, passwordEE);
+
+        while (alisases.hasMoreElements()) {
+            Certificate c = store.findCertificateByAlias(alisases.nextElement(), fileLocationEE, passwordEE);
+            JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
+            certificateBasicDTOS.add(new CertificateBasicDTO(certHolder));
+
+        }
+        return certificateBasicDTOS;
+    }
+
+    public List<IssuerDTO> getAllCA() throws CertificateEncodingException {
+
+        Enumeration<String> alisases = store.getAllAliases(fileLocationCA, passwordCA);
+        List<IssuerDTO> issuerDTOS = new ArrayList<>();
+
+        while (alisases.hasMoreElements()) {
+            Certificate c = store.findCertificateByAlias(alisases.nextElement(), fileLocationCA, passwordCA);
+            JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
+            if (((X509Certificate) c).getBasicConstraints() > -1) {
+                if(checkValidityStatus(((X509Certificate) c).getSerialNumber().toString())){
+                    issuerDTOS.add(new IssuerDTO(certHolder));
+                }
+            }
+        }
+        return issuerDTOS;
+    }
+
+    public boolean checkValidityStatus(String serialNumber) {
+
+        ArrayList<Certificate> chain = new ArrayList<>();
+        CertificateNew cDB = findCertificate(serialNumber);
+
+        //if there are no certificates in the database
+        if(cDB == null){
+            return false;
+        }
+
+        if(!cDB.isCa()){
+            //if it is end-entity we add it in the array and then we take the whole chain of its CA and add that chain in the array
+            Certificate cert = store.findCertificateBySerialNumber(serialNumber, fileLocationEE,passwordEE);
+            chain.add(cert);
+            Certificate[] CAchain = store.findCertificateChainBySerialNumber(cDB.getIssuerSerialNumber(), fileLocationCA,passwordCA);
+            for(Certificate c: CAchain) {
+                chain.add(c);
+            }
+
+        }else{
+            //if it is CA then we take its chain and add it in the array
+            Certificate[] CAchain = store.findCertificateChainBySerialNumber(serialNumber, fileLocationCA,passwordCA);
+            for(Certificate c: CAchain) {
+                chain.add(c);
+            }
+
+        }
+
+        for(int i =0 ; i < chain.size(); i++) {
+
+            X509Certificate x509Cert = (X509Certificate)chain.get(i);
+            X509Certificate x509CACert =null;
+
+            if(i != chain.size()-1) {
+                x509CACert = (X509Certificate)chain.get(i+1);
+            }else {
+                x509CACert = (X509Certificate)chain.get(i); //at the end check the self-signed
+            }
+
+
+            //for every certificate in the chain check whether it expired
+            try {
+                x509Cert.checkValidity();
+            } catch (CertificateExpiredException | CertificateNotYetValidException e) {
+                // TODO Auto-generated catch block
+                System.out.println("CERTIFICATE: "+x509Cert.getSerialNumber()+" EXPIRED.");
+                e.printStackTrace();
+                return false;
+            }
+
+
+            //signature check
+            try {
+                x509Cert.verify(x509CACert.getPublicKey());
+            } catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException | NoSuchProviderException
+                    | SignatureException e) {
+                System.out.println("CERTIFICATE: "+x509Cert.getSerialNumber()+" DOESN'T HAVE VALID SIGNATURE.");
+
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return false;
+
+            }
+
+            //check if it's revoked
+            if(checkRevocationStatusOCSP(x509Cert.getSerialNumber().toString())) {
+                System.out.println("CERTIFICATE: "+x509Cert.getSerialNumber()+" IS REVOKED.");
+                return false;
+            }
+
+            //check if the issuer is CA
+            if(x509CACert.getBasicConstraints() == -1) {
+                System.out.println("CERTIFICATE: "+x509CACert.getSerialNumber()+" IS NOT CA.");
+                return false;
+            }
+
+            //check the key
+            if(keyExpirationService.expired(x509Cert.getSerialNumber().toString())) {
+                System.out.println("CERTIFICATE'S: "+x509Cert.getSerialNumber()+" KEY EXPIRED.");
+                return false;
+            }
+
+        }
+
+        System.out.println("CERTIFICATE AND ITS CHAIN ARE VALID.");
+        return true;
+    }
+
+    public boolean checkRevocationStatusOCSP(String serialNumber) {
+        CertificateNew certNew = findCertificate(serialNumber);
+
+        //if there are no certificates in the database
+        if(certNew == null){
+            return true;
+        }
+
+        if(certNew.isRevoked()){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

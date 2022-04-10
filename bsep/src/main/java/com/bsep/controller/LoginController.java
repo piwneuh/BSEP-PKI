@@ -4,7 +4,9 @@ import com.bsep.model.Administrator;
 import com.bsep.service.AdministratorService;
 import com.bsep.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,13 +21,13 @@ public class LoginController {
     @Autowired
     private ClientService clientService;
 
-    @PostMapping("/login/{username}/{password}")
-    public Object login(@PathVariable("username") String username, @PathVariable("password") String password) {
+    @GetMapping("/login/{username}/{password}")
+    public ResponseEntity<?> login(@PathVariable("username") String username, @PathVariable("password") String password) {
         Administrator administrator = administratorService.login(username, password);
         if (administrator != null) {
-            return administrator;
+            return ResponseEntity.ok(administrator);
         } else {
-            return clientService.login(username, password);
+            return ResponseEntity.ok(null);
         }
     }
 
