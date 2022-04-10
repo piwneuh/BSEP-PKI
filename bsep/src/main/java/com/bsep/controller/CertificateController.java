@@ -54,4 +54,9 @@ public class CertificateController {
     public ResponseEntity<?> getAllByUsername(@PathVariable("username") String username) throws CertificateEncodingException, CertificateParsingException {
         return ResponseEntity.ok(certificateService.getAllByUsername(username));
     }
+
+    @GetMapping(value="/checkValidityStatus/{serialNumber}", produces = "application/json")
+    public ResponseEntity<?> checkValidityStatus(@PathVariable("serialNumber") String serialNumber) throws CertificateEncodingException, CertificateParsingException {
+        return ResponseEntity.ok(certificateService.checkValidityStatus(serialNumber));
+    }
 }
