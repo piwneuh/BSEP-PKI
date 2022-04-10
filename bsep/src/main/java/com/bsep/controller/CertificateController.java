@@ -49,4 +49,9 @@ public class CertificateController {
     public ResponseEntity<?> getAllCA() throws CertificateEncodingException, CertificateParsingException {
         return ResponseEntity.ok(certificateService.getAllCA());
     }
+
+    @GetMapping(value="/getAllByUsername/{username}", produces = "application/json")
+    public ResponseEntity<?> getAllByUsername(@PathVariable("username") String username) throws CertificateEncodingException, CertificateParsingException {
+        return ResponseEntity.ok(certificateService.getAllByUsername(username));
+    }
 }

@@ -10,8 +10,10 @@ import com.bsep.model.IssuerData;
 import com.bsep.model.SubjectData;
 import com.bsep.repository.CertificateRepository;
 import com.bsep.repository.CertificatesWriter;
+import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -418,5 +420,43 @@ public class CertificateService {
         }else{
             return false;
         }
+    }
+
+    public ArrayList<CertificateBasicDTO> getAllByUsername(String username) throws CertificateEncodingException {
+
+        //Svi CA se citaju
+        Enumeration<String> alisases = store.getAllAliases(fileLocationCA, passwordCA);
+        ArrayList<CertificateBasicDTO> certificateBasicDTOS = new ArrayList<>();
+
+        while (alisases.hasMoreElements()) {
+            Certificate c = store.findCertificateByAlias(alisases.nextElement(), fileLocationCA, passwordCA);
+            JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
+            RDN cn;
+            String subjectEmail = "";
+            if(certHolder.getSubject().getRDNs(BCStyle.E).length > 0) {
+                cn = certHolder.getSubject().getRDNs(BCStyle.E)[0];
+                subjectEmail = IETFUtils.valueToString(cn.getFirst().getValue());
+            }
+            if(subjectEmail.equals(username))
+                certificateBasicDTOS.add(new CertificateBasicDTO(certHolder));
+        }
+
+        //Svi end-entity se citaju
+        alisases = store.getAllAliases(fileLocationEE, passwordEE);
+
+        while (alisases.hasMoreElements()) {
+            Certificate c = store.findCertificateByAlias(alisases.nextElement(), fileLocationEE, passwordEE);
+            JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
+            RDN cn;
+            String subjectEmail = "";
+            if(certHolder.getSubject().getRDNs(BCStyle.E).length > 0) {
+                cn = certHolder.getSubject().getRDNs(BCStyle.E)[0];
+                subjectEmail = IETFUtils.valueToString(cn.getFirst().getValue());
+            }
+            if(subjectEmail.equals(username))
+                certificateBasicDTOS.add(new CertificateBasicDTO(certHolder));
+
+        }
+        return certificateBasicDTOS;
     }
 }
