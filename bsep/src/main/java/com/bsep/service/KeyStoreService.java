@@ -49,7 +49,7 @@ public class KeyStoreService {
             PrivateKey privKey = (PrivateKey) keyStore.getKey(alias, keyPass);
 
             X500Name issuerName = new JcaX509CertificateHolder((X509Certificate) cert).getSubject();
-            return new IssuerData(privKey, issuerName);
+            return new IssuerData(issuerName, privKey);
         } catch (KeyStoreException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {

@@ -199,7 +199,7 @@ public class CertificateService {
                 builder.addRDN(BCStyle.E, certificateDTO.getSubjectEmail());
             }
 
-            return new IssuerData(keyPairSubject.getPrivate(), builder.build());
+            return new IssuerData(builder.build(), keyPairSubject.getPrivate());
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -7,6 +7,7 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.security.PrivateKey;
@@ -19,7 +20,8 @@ import java.util.Enumeration;
 @Repository
 public class CertificatesWriter {
 
-    private final KeyStoreService keyStoreService = new KeyStoreService();
+    @Autowired
+    private KeyStoreService keyStoreService;
 
     public void saveCertificate(X509Certificate[] chain, PrivateKey privateKey, String fileLocation, String password) throws CertificateEncodingException {
         String serialNumber = chain[0].getSerialNumber().toString();
@@ -27,10 +29,10 @@ public class CertificatesWriter {
         keyStoreService.write(serialNumber, privateKey, serialNumber.toCharArray(), chain);
         keyStoreService.saveKeyStore(fileLocation, password.toCharArray());
 
-        Enumeration<String> alisases = this.getAllAliases(fileLocation, password);
+        Enumeration<String> aliases = this.getAllAliases(fileLocation, password);
         System.out.println("Aliases in keystore" + fileLocation + ":");
-        while(alisases.hasMoreElements()){
-            System.out.println(alisases.nextElement());
+        while(aliases.hasMoreElements()){
+            System.out.println(aliases.nextElement());
         }
 
         Certificate[] certificateChain = this.keyStoreService.readCertificateChain(fileLocation,password,serialNumber);

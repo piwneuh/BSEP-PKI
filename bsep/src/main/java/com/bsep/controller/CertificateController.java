@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
 import java.security.*;
@@ -16,6 +17,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 
 @Controller
+@RequestMapping(value = "/api")
 public class CertificateController {
 
     @Autowired
