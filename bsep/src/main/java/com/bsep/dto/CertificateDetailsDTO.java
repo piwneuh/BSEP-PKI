@@ -37,18 +37,10 @@ public class CertificateDetailsDTO {
     private String issuerEmail;
     private String issuerCommonName;
     private String issuerSerialNumber;
-
     private String type;
-    private List<String> subjectAlternativeNames;
-    private String authorityKeyIdentifier;
-    private String subjectKeyIdentifier;
-    private List<String> keyUsageList;
-    private List<String> extendedKeyUsageList;
 
-    public CertificateDetailsDTO()
-    {
 
-    }
+    public CertificateDetailsDTO() {}
 
     public CertificateDetailsDTO(JcaX509CertificateHolder certificateHolder, X509Certificate cert, String issuerSerialNumber, Boolean isRoot) throws CertificateParsingException {
         this.serialNumber = certificateHolder.getSerialNumber().toString();
@@ -124,7 +116,6 @@ public class CertificateDetailsDTO {
             cn = subject.getRDNs(BCStyle.SURNAME)[0];
             this.subjectSurname = IETFUtils.valueToString(cn.getFirst().getValue());
         }
-
     }
 
     private void generateIssuer(X500Name issuer)

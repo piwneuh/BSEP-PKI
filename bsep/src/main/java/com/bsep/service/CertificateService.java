@@ -1,6 +1,5 @@
 package com.bsep.service;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import com.bsep.dto.CertificateBasicDTO;
 import com.bsep.dto.CertificateDTO;
 import com.bsep.dto.CertificateDetailsDTO;
@@ -46,7 +45,7 @@ public class CertificateService {
     @Autowired
     private CertificateGenerator certificateGenerator;
     @Autowired
-    private CertificatesWriter store;
+    private CertificatesWriter certificatesWriter;
     @Autowired
     private KeyExpirationService keyExpirationService;
 
@@ -60,11 +59,10 @@ public class CertificateService {
             cert = certificateGenerator.generateCertificate(subjectData, issuerData, certificateDTO);
 
         } else if (certificateDTO.getCertificateType().equals(CertType.INTERMEDIATE)) {
-
             String serialNumber = certificateDTO.getIssuerSerialNumber();
-            IssuerData issuerData = store.findIssuerBySerialNumber(serialNumber, fileLocationCA, passwordCA);
+            IssuerData issuerData = certificatesWriter.findIssuerBySerialNumber(serialNumber, fileLocationCA, passwordCA);
             if (checkValidityStatus(serialNumber)) {
-                issuerCertificate = (X509Certificate) store.findCertificateBySerialNumber(serialNumber, fileLocationCA, passwordCA);
+                issuerCertificate = (X509Certificate) certificatesWriter.findCertificateBySerialNumber(serialNumber, fileLocationCA, passwordCA);
                 cert = certificateGenerator.generateCertificate(subjectData, issuerData, certificateDTO);
             }
             else
@@ -74,20 +72,17 @@ public class CertificateService {
             }
 
         } else if (certificateDTO.getCertificateType().equals(CertType.REGULAR)) {
-
             String serialNumber = certificateDTO.getIssuerSerialNumber();
-            IssuerData issuerData = store.findIssuerBySerialNumber(serialNumber, fileLocationCA, passwordCA);
+            IssuerData issuerData = certificatesWriter.findIssuerBySerialNumber(serialNumber, fileLocationCA, passwordCA);
             if (checkValidityStatus(serialNumber)) {
-                issuerCertificate = (X509Certificate) store.findCertificateBySerialNumber(serialNumber, fileLocationCA, passwordCA);
-                cert = certificateGenerator.generateCertificate(subjectData, issuerData,
-                        certificateDTO);
+                issuerCertificate = (X509Certificate) certificatesWriter.findCertificateBySerialNumber(serialNumber, fileLocationCA, passwordCA);
+                cert = certificateGenerator.generateCertificate(subjectData, issuerData, certificateDTO);
             }
             else
             {
                 System.out.println("Issuer not valid");
                 return false;
             }
-
         }
 
         if (cert == null) {
@@ -96,41 +91,38 @@ public class CertificateService {
 
         if (certificateDTO.getCertificateType().equals(CertType.ROOT)) {
             keyExpirationService.save(cert);
-            store.saveCertificate(new X509Certificate[]{cert}, keyPairSubject.getPrivate(), fileLocationCA, passwordCA);
-            //save in the datebase
-            CertificateNew certDB = new CertificateNew(cert.getSerialNumber().toString(),null,true);
-            save(certDB);
+            certificatesWriter.saveCertificate(new X509Certificate[]{cert}, keyPairSubject.getPrivate(), fileLocationCA, passwordCA);
+            //sacuvaj u bazu
+            CertificateNew certificateNew = new CertificateNew(cert.getSerialNumber().toString(),null,true);
+            save(certificateNew);
             System.out.println("******** SAVED ROOT ********");
         }
 
         if (certificateDTO.getCertificateType().equals(CertType.INTERMEDIATE)) {
-            Certificate[] issuerChain = store.findCertificateChainBySerialNumber(certificateDTO.getIssuerSerialNumber(), fileLocationCA, passwordCA);
+            Certificate[] issuerChain = certificatesWriter.findCertificateChainBySerialNumber(certificateDTO.getIssuerSerialNumber(), fileLocationCA, passwordCA);
             X509Certificate issuerChainX509[] = new X509Certificate[issuerChain.length + 1];
             issuerChainX509[0] = cert;
             for(int i=0;i<issuerChain.length;i++){
                 issuerChainX509[i+1] = (X509Certificate) issuerChain[i];
             }
 
-            //  remember when the key expires for the certificate
+            //zapamti kada kljuc istekne za sertifikat
             keyExpirationService.save(issuerChainX509[0]);
-
-            store.saveCertificate(issuerChainX509, keyPairSubject.getPrivate(), fileLocationCA, passwordCA);
-            //save in the database
-            CertificateNew certDB = new CertificateNew(cert.getSerialNumber().toString(),certificateDTO.getIssuerSerialNumber(),true);
-            save(certDB);
+            certificatesWriter.saveCertificate(issuerChainX509, keyPairSubject.getPrivate(), fileLocationCA, passwordCA);
+            //sacuvaj u bazu
+            CertificateNew certificateNew = new CertificateNew(cert.getSerialNumber().toString(),certificateDTO.getIssuerSerialNumber(),true);
+            save(certificateNew);
             System.out.println("********SAVED INTERMEDIATE********");
         }
 
         if (certificateDTO.getCertificateType().equals(CertType.REGULAR)) {
             keyExpirationService.save(cert);
-            store.saveCertificate(new X509Certificate[]{cert}, keyPairSubject.getPrivate(), fileLocationEE, passwordEE);
-            //save in the database
-            CertificateNew certDB = new CertificateNew(cert.getSerialNumber().toString(),certificateDTO.getIssuerSerialNumber(),false);
-            save(certDB);
+            certificatesWriter.saveCertificate(new X509Certificate[]{cert}, keyPairSubject.getPrivate(), fileLocationEE, passwordEE);
+            //sacuvaj u bazu
+            CertificateNew certificateNew = new CertificateNew(cert.getSerialNumber().toString(),certificateDTO.getIssuerSerialNumber(),false);
+            save(certificateNew);
             System.out.println("******** SAVED END-ENTITY ********");
-
         }
-
         return true;
     }
 
@@ -150,11 +142,9 @@ public class CertificateService {
 
     private SubjectData generateSubjectData(CertificateDTO certificateDTO) {
         try {
-
             SimpleDateFormat iso8601Formater = new SimpleDateFormat("yyyy-MM-dd");
             Date startDate = iso8601Formater.parse(certificateDTO.getStartDate());
             Date endDate = iso8601Formater.parse(certificateDTO.getEndDate());
-
             String serialNumber = generateRandom().toString();
 
             X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
@@ -224,7 +214,7 @@ public class CertificateService {
         }
         return null;
     }
-    //####
+
     public CertificateNew findCertificate(String serialNumber) {
         return certificateRepository.findBySubjectSerialNumber(serialNumber);
     }
@@ -236,7 +226,6 @@ public class CertificateService {
     public List<CertificateNew> findAllFirstChildren(String serialNumber) {
         return certificateRepository.findAllByIssuerSerialNumber(serialNumber);
     }
-    //######
 
     public BigInteger generateRandom() {
         BigInteger maxLimit = new BigInteger("5000000000000");
@@ -248,17 +237,16 @@ public class CertificateService {
     }
 
     public CertificateDetailsDTO getCertificateDetails(String serialNumber) throws CertificateEncodingException, CertificateParsingException {
-
-        CertificateNew certDB = findCertificateNew(serialNumber);
+        CertificateNew certificateNew = findCertificateNew(serialNumber);
         X509Certificate cert;
-        if(certDB.isCa()) {
-            cert = (X509Certificate) store.findCertificateBySerialNumber(serialNumber, fileLocationCA, passwordCA);
+        if(certificateNew.isCa()) {
+            cert = (X509Certificate) certificatesWriter.findCertificateBySerialNumber(serialNumber, fileLocationCA, passwordCA);
             if(cert != null) {
                 JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) cert);
-                Certificate[] chain = store.findCertificateChainBySerialNumber(serialNumber, fileLocationCA, passwordCA);
+                Certificate[] chain = certificatesWriter.findCertificateChainBySerialNumber(serialNumber, fileLocationCA, passwordCA);
                 X509Certificate x509Cert;
                 Boolean isRoot;
-                if (chain.length == 1) { //if it is root then it doesn't have a parent
+                if (chain.length == 1) { //ako je koren onda nema roditelja
                     x509Cert = (X509Certificate) chain[0];
                     isRoot = true;
                 } else {
@@ -267,25 +255,22 @@ public class CertificateService {
                 }
 
                 String issuerSerialNumber = x509Cert.getSerialNumber().toString();
-
                 CertificateDetailsDTO cddto = new CertificateDetailsDTO(certHolder, cert, issuerSerialNumber, isRoot);
                 return cddto;
             }else{
                 return null;
             }
 
-        }else{
-            cert = (X509Certificate) store.findCertificateBySerialNumber(serialNumber, fileLocationEE, passwordEE);
+        }else{  //ako nije CA
+            cert = (X509Certificate) certificatesWriter.findCertificateBySerialNumber(serialNumber, fileLocationEE, passwordEE);
             if(cert != null) {
                 JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) cert);
-                String issuerSerialNumber = certDB.getIssuerSerialNumber();
+                String issuerSerialNumber = certificateNew.getIssuerSerialNumber();
                 boolean isRoot = false;
-                CertificateDetailsDTO cddto = new CertificateDetailsDTO(certHolder, cert, issuerSerialNumber, isRoot);
-                return cddto;
+                return new CertificateDetailsDTO(certHolder, cert, issuerSerialNumber, isRoot);
             }else{
                 return null;
             }
-
         }
     }
 
@@ -294,37 +279,36 @@ public class CertificateService {
     }
 
     public ArrayList<CertificateBasicDTO> getAllCertificates() throws CertificateEncodingException {
-
         //Svi CA se citaju
-        Enumeration<String> alisases = store.getAllAliases(fileLocationCA, passwordCA);
+        Enumeration<String> aliases = certificatesWriter.getAllAliases(fileLocationCA, passwordCA);
         ArrayList<CertificateBasicDTO> certificateBasicDTOS = new ArrayList<>();
 
-        while (alisases.hasMoreElements()) {
-            Certificate c = store.findCertificateByAlias(alisases.nextElement(), fileLocationCA, passwordCA);
+        //prolazi kroz elemente keystore-a
+        while (aliases.hasMoreElements()) {
+            Certificate c = certificatesWriter.findCertificateByAlias(aliases.nextElement(), fileLocationCA, passwordCA);
             JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
             certificateBasicDTOS.add(new CertificateBasicDTO(certHolder));
-
         }
 
         //Svi end-entity se citaju
-        alisases = store.getAllAliases(fileLocationEE, passwordEE);
+        aliases = certificatesWriter.getAllAliases(fileLocationEE, passwordEE);
 
-        while (alisases.hasMoreElements()) {
-            Certificate c = store.findCertificateByAlias(alisases.nextElement(), fileLocationEE, passwordEE);
+        while (aliases.hasMoreElements()) {
+            Certificate c = certificatesWriter.findCertificateByAlias(aliases.nextElement(), fileLocationEE, passwordEE);
             JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
             certificateBasicDTOS.add(new CertificateBasicDTO(certHolder));
-
         }
         return certificateBasicDTOS;
     }
 
     public List<IssuerDTO> getAllCA() throws CertificateEncodingException {
 
-        Enumeration<String> alisases = store.getAllAliases(fileLocationCA, passwordCA);
+        Enumeration<String> aliases = certificatesWriter.getAllAliases(fileLocationCA, passwordCA);
         List<IssuerDTO> issuerDTOS = new ArrayList<>();
 
-        while (alisases.hasMoreElements()) {
-            Certificate c = store.findCertificateByAlias(alisases.nextElement(), fileLocationCA, passwordCA);
+        //prolazi kroz elemente keystore-a
+        while (aliases.hasMoreElements()) {
+            Certificate c = certificatesWriter.findCertificateByAlias(aliases.nextElement(), fileLocationCA, passwordCA);
             JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
             if (((X509Certificate) c).getBasicConstraints() > -1) {
                 if(checkValidityStatus(((X509Certificate) c).getSerialNumber().toString())){
@@ -340,27 +324,26 @@ public class CertificateService {
         ArrayList<Certificate> chain = new ArrayList<>();
         CertificateNew cDB = findCertificate(serialNumber);
 
-        //if there are no certificates in the database
+        //ako u bazi nema sertifikata
         if(cDB == null){
             return false;
         }
 
         if(!cDB.isCa()){
-            //if it is end-entity we add it in the array and then we take the whole chain of its CA and add that chain in the array
-            Certificate cert = store.findCertificateBySerialNumber(serialNumber, fileLocationEE,passwordEE);
+            //ako je EE, dodajemo u niz i onda gledamo ceo lanac sa CA i dodajemo taj lanac u niz
+            Certificate cert = certificatesWriter.findCertificateBySerialNumber(serialNumber, fileLocationEE,passwordEE);
             chain.add(cert);
-            Certificate[] CAchain = store.findCertificateChainBySerialNumber(cDB.getIssuerSerialNumber(), fileLocationCA,passwordCA);
+            Certificate[] CAchain = certificatesWriter.findCertificateChainBySerialNumber(cDB.getIssuerSerialNumber(), fileLocationCA,passwordCA);
             for(Certificate c: CAchain) {
                 chain.add(c);
             }
 
         }else{
-            //if it is CA then we take its chain and add it in the array
-            Certificate[] CAchain = store.findCertificateChainBySerialNumber(serialNumber, fileLocationCA,passwordCA);
+            //ako je CA onda uzimamo lanac i dodajemo u niz
+            Certificate[] CAchain = certificatesWriter.findCertificateChainBySerialNumber(serialNumber, fileLocationCA,passwordCA);
             for(Certificate c: CAchain) {
                 chain.add(c);
             }
-
         }
 
         for(int i =0 ; i < chain.size(); i++) {
@@ -371,62 +354,56 @@ public class CertificateService {
             if(i != chain.size()-1) {
                 x509CACert = (X509Certificate)chain.get(i+1);
             }else {
-                x509CACert = (X509Certificate)chain.get(i); //at the end check the self-signed
+                x509CACert = (X509Certificate)chain.get(i); //na kraju proveri self-signed
             }
 
-
-            //for every certificate in the chain check whether it expired
+            //za svaki sertifikat u lancu da li je istekao
             try {
                 x509Cert.checkValidity();
             } catch (CertificateExpiredException | CertificateNotYetValidException e) {
-                // TODO Auto-generated catch block
                 System.out.println("CERTIFICATE: "+x509Cert.getSerialNumber()+" EXPIRED.");
                 e.printStackTrace();
                 return false;
             }
 
-
-            //signature check
+            //provera potpisa
             try {
                 x509Cert.verify(x509CACert.getPublicKey());
             } catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException | NoSuchProviderException
                     | SignatureException e) {
                 System.out.println("CERTIFICATE: "+x509Cert.getSerialNumber()+" DOESN'T HAVE VALID SIGNATURE.");
-
-                // TODO Auto-generated catch block
                 e.printStackTrace();
                 return false;
-
             }
 
-            //check if it's revoked
+            //provera da li je revoked
             if(checkRevocationStatusOCSP(x509Cert.getSerialNumber().toString())) {
                 System.out.println("CERTIFICATE: "+x509Cert.getSerialNumber()+" IS REVOKED.");
                 return false;
             }
 
-            //check if the issuer is CA
+            //provera da li je issuer CA
             if(x509CACert.getBasicConstraints() == -1) {
                 System.out.println("CERTIFICATE: "+x509CACert.getSerialNumber()+" IS NOT CA.");
                 return false;
             }
 
-            //check the key
+            //provera da li je istekao
             if(keyExpirationService.expired(x509Cert.getSerialNumber().toString())) {
                 System.out.println("CERTIFICATE'S: "+x509Cert.getSerialNumber()+" KEY EXPIRED.");
                 return false;
             }
 
         }
-
         System.out.println("CERTIFICATE AND ITS CHAIN ARE VALID.");
         return true;
     }
 
+    //provera da li je revokovan
     public boolean checkRevocationStatusOCSP(String serialNumber) {
         CertificateNew certNew = findCertificate(serialNumber);
 
-        //if there are no certificates in the database
+        //ako nema sertifikata u bazi
         if(certNew == null){
             return true;
         }
@@ -441,11 +418,12 @@ public class CertificateService {
     public ArrayList<CertificateBasicDTO> getAllByUsername(String username) throws CertificateEncodingException {
 
         //Svi CA se citaju
-        Enumeration<String> alisases = store.getAllAliases(fileLocationCA, passwordCA);
+        Enumeration<String> alisases = certificatesWriter.getAllAliases(fileLocationCA, passwordCA);
         ArrayList<CertificateBasicDTO> certificateBasicDTOS = new ArrayList<>();
 
+        //prolazi kroz elemente i vraca listu sertifikata koji imaju isti email unutar subject-a
         while (alisases.hasMoreElements()) {
-            Certificate c = store.findCertificateByAlias(alisases.nextElement(), fileLocationCA, passwordCA);
+            Certificate c = certificatesWriter.findCertificateByAlias(alisases.nextElement(), fileLocationCA, passwordCA);
             JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
             RDN cn;
             String subjectEmail = "";
@@ -458,10 +436,10 @@ public class CertificateService {
         }
 
         //Svi end-entity se citaju
-        alisases = store.getAllAliases(fileLocationEE, passwordEE);
+        alisases = certificatesWriter.getAllAliases(fileLocationEE, passwordEE);
 
         while (alisases.hasMoreElements()) {
-            Certificate c = store.findCertificateByAlias(alisases.nextElement(), fileLocationEE, passwordEE);
+            Certificate c = certificatesWriter.findCertificateByAlias(alisases.nextElement(), fileLocationEE, passwordEE);
             JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
             RDN cn;
             String subjectEmail = "";
@@ -471,7 +449,6 @@ public class CertificateService {
             }
             if(subjectEmail.equals(username))
                 certificateBasicDTOS.add(new CertificateBasicDTO(certHolder));
-
         }
         return certificateBasicDTOS;
     }

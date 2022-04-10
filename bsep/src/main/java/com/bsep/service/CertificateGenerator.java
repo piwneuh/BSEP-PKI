@@ -55,39 +55,8 @@ public class CertificateGenerator {
             //Adding BasicConstraints for all
             certGen.addExtension(Extension.basicConstraints, true, new BasicConstraints(!certDTO.getCertificateType().equals(CertType.REGULAR)));
 
-            //Adding KeyUsage for all
-            int allKeyUsages = 0;
-            for (Integer i : certDTO.getKeyUsageList()) {
-                allKeyUsages = allKeyUsages | i;
-            }
-            certGen.addExtension(Extension.keyUsage, true, new KeyUsage(allKeyUsages));
-
-            //Adding ExtendedKeyUsage only if it exists, if it is End Entity
-            if(certDTO.getExtendedKeyUsageList() != null) {
-                KeyPurposeId kpi[] = new KeyPurposeId[certDTO.getExtendedKeyUsageList().size()];
-                int i = 0;
-                for (String s : certDTO.getExtendedKeyUsageList()) {
-                    ASN1ObjectIdentifier newKeyPurposeIdOID = new ASN1ObjectIdentifier(s);
-                    KeyPurposeId newKeyPurposeId = KeyPurposeId.getInstance(newKeyPurposeIdOID);
-                    kpi[i] = newKeyPurposeId;
-                    i++;
-
-                }
-                ExtendedKeyUsage eku = new ExtendedKeyUsage(kpi);
-                certGen.addExtension(Extension.extendedKeyUsage, false, eku);
-            }
-
-            //Adding Subject Alternative Name only if it exists, it is not required
-            if(certDTO.getValueSAN() != null){
-                GeneralName altName = new GeneralName(certDTO.getTypeSAN(), certDTO.getValueSAN());
-                GeneralNames subjectAltName = new GeneralNames(altName);
-                System.out.println("Alt name: "+subjectAltName.getNames());
-                certGen.addExtension(Extension.subjectAlternativeName,false,subjectAltName);
-            }
-
             //Adding Subject Key Identifier for all
             JcaX509ExtensionUtils utils = new JcaX509ExtensionUtils();
-
             SubjectKeyIdentifier ski = utils.createSubjectKeyIdentifier(subjectData.getPublicKey());
             certGen.addExtension(Extension.subjectKeyIdentifier, false, ski);
 
@@ -97,7 +66,6 @@ public class CertificateGenerator {
                 AuthorityKeyIdentifier aki = utils.createAuthorityKeyIdentifier(certIssuer.getPublicKey());
                 certGen.addExtension(Extension.authorityKeyIdentifier, false, aki);
             }
-
 
             X509CertificateHolder certHolder = certGen.build(contentSigner);
             JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();

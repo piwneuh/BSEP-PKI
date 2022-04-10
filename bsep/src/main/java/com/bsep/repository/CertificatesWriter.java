@@ -36,10 +36,9 @@ public class CertificatesWriter {
         }
 
         Certificate[] certificateChain = this.keyStoreService.readCertificateChain(fileLocation,password,serialNumber);
-        System.out.println("Chain length: " + certificateChain.length);
+        System.out.println("Chain length: " + certificateChain.length); //ispis duzine i elemenata lanca(common name)
         System.out.println("Chain:");
         for(int i=0;i<certificateChain.length;i++){
-
             System.out.println(new JcaX509CertificateHolder((X509Certificate) certificateChain[i]).getSerialNumber());
             X500Name x500name = new JcaX509CertificateHolder((X509Certificate) certificateChain[i]).getSubject();
             RDN cn = x500name.getRDNs(BCStyle.CN)[0];
@@ -58,7 +57,6 @@ public class CertificatesWriter {
 
     public Certificate findCertificateByAlias(String alias, String fileLocation, String password){
         return keyStoreService.readCertificate(fileLocation, password, alias);
-
     }
 
     public Certificate[] findCertificateChainBySerialNumber(String serialNumber, String fileLocation, String password) {

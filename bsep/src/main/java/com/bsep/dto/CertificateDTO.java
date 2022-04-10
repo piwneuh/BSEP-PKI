@@ -22,19 +22,13 @@ public class CertificateDTO {
     private String endDate;
     private String issuerSerialNumber;
     private CertType certificateType;
-    private List<Integer> keyUsageList;
-    private List<String> extendedKeyUsageList;
-    private int typeSAN;
-    private String valueSAN;
-    boolean basicConstraints;
-
 
     public CertificateDTO() { }
 
     public CertificateDTO(String subjectCommonName, String subjectFirstName,
                           String subjectLastName, String subjectEmail, String subjectOrganization,
                           String subjectOrganizationUnit, String subjectState, String subjectCountry, String startDate, String endDate,
-                          String issuerSerialNumber, CertType certificateType, int typeSAN, String valueSAN, boolean basicConstraints) {
+                          String issuerSerialNumber, CertType certificateType) {
         this.subjectCommonName = subjectCommonName;
         this.subjectFirstName = subjectFirstName;
         this.subjectLastName = subjectLastName;
@@ -47,10 +41,5 @@ public class CertificateDTO {
         this.endDate = endDate;
         this.issuerSerialNumber = issuerSerialNumber;
         this.certificateType = certificateType;
-        this.keyUsageList = new ArrayList<>();
-        this.extendedKeyUsageList = new ArrayList<>();
-        this.typeSAN = typeSAN;
-        this.valueSAN = valueSAN;
-        this.basicConstraints = basicConstraints;
     }
 }

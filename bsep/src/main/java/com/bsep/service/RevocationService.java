@@ -58,6 +58,7 @@ public class RevocationService {
             return true;
         }
 
+        //formiranje lanca u odnosu da li je CA ili nije
         if(certDB.isCa()) {
             Certificate certificateChain[] = store.findCertificateChainBySerialNumber(serialNumber, fileLocationCA, passwordCA);
             System.out.println(certificateChain.length);
@@ -83,7 +84,6 @@ public class RevocationService {
                 return true;
             }
         }
-
         return false;
     }
 }
