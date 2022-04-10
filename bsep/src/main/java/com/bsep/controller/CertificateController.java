@@ -3,8 +3,10 @@ package com.bsep.controller;
 import com.bsep.dto.CertificateBasicDTO;
 import com.bsep.dto.CertificateDTO;
 import com.bsep.dto.CertificateDetailsDTO;
+import com.bsep.dto.RevocationDTO;
 import com.bsep.model.SubjectData;
 import com.bsep.service.CertificateService;
+import com.bsep.service.RevocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,9 @@ public class CertificateController {
 
     @Autowired
     private CertificateService certificateService;
+
+    @Autowired
+    private RevocationService revocationService;
 
     @PostMapping(value="/addNewCertificate", consumes="application/json")
     public ResponseEntity<?> addNewCertificate(@RequestBody CertificateDTO certificateDTO) throws CertificateEncodingException {
@@ -58,5 +63,10 @@ public class CertificateController {
     @GetMapping(value="/checkValidityStatus/{serialNumber}", produces = "application/json")
     public ResponseEntity<?> checkValidityStatus(@PathVariable("serialNumber") String serialNumber) throws CertificateEncodingException, CertificateParsingException {
         return ResponseEntity.ok(certificateService.checkValidityStatus(serialNumber));
+    }
+    
+    @PostMapping(value="/revokeCertificate", consumes="application/json")
+    public ResponseEntity<?> revokeCertificate(@RequestBody RevocationDTO revocationDTO){
+        return ResponseEntity.ok(revocationService.revokeCertificate(revocationDTO));
     }
 }
