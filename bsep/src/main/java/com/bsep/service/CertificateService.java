@@ -1,5 +1,6 @@
 package com.bsep.service;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.bsep.dto.CertificateBasicDTO;
 import com.bsep.dto.CertificateDTO;
 import com.bsep.dto.CertificateDetailsDTO;
@@ -62,16 +63,31 @@ public class CertificateService {
 
             String serialNumber = certificateDTO.getIssuerSerialNumber();
             IssuerData issuerData = store.findIssuerBySerialNumber(serialNumber, fileLocationCA, passwordCA);
-            issuerCertificate = (X509Certificate) store.findCertificateBySerialNumber(serialNumber, fileLocationCA, passwordCA);
-            cert = certificateGenerator.generateCertificate(subjectData, issuerData, certificateDTO);
+            if (checkValidityStatus(serialNumber)) {
+                issuerCertificate = (X509Certificate) store.findCertificateBySerialNumber(serialNumber, fileLocationCA, passwordCA);
+                cert = certificateGenerator.generateCertificate(subjectData, issuerData, certificateDTO);
+            }
+            else
+            {
+                System.out.println("Issuer not valid");
+                return false;
+            }
 
         } else if (certificateDTO.getCertificateType().equals(CertType.REGULAR)) {
 
             String serialNumber = certificateDTO.getIssuerSerialNumber();
             IssuerData issuerData = store.findIssuerBySerialNumber(serialNumber, fileLocationCA, passwordCA);
-            issuerCertificate = (X509Certificate) store.findCertificateBySerialNumber(serialNumber, fileLocationCA, passwordCA);
-            cert = certificateGenerator.generateCertificate(subjectData, issuerData,
-                    certificateDTO);
+            if (checkValidityStatus(serialNumber)) {
+                issuerCertificate = (X509Certificate) store.findCertificateBySerialNumber(serialNumber, fileLocationCA, passwordCA);
+                cert = certificateGenerator.generateCertificate(subjectData, issuerData,
+                        certificateDTO);
+            }
+            else
+            {
+                System.out.println("Issuer not valid");
+                return false;
+            }
+
         }
 
         if (cert == null) {
