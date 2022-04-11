@@ -82,10 +82,10 @@
 
         <div class="control">
           <div class="select">
-            <select>
-              <option>ROOT</option>
-              <option>INTERMEDIATE</option>
-              <option>END</option>
+            <select [(ngModel)] = "newCertificate.certificateType">
+              <option value = '0'>ROOT</option>
+              <option value = '1'>INTERMEDIATE</option>
+              <option value = '2'>END</option>
             </select>
           </div>
         </div>
