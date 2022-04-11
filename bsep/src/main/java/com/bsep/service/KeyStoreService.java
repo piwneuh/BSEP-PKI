@@ -188,7 +188,7 @@ public class KeyStoreService {
     public void loadKeyStore(String fileName, char[] password) {
         try {
             if(fileName != null) {
-                File file1 = new File("keystore/keystoreCA.jks");
+                File file1 = new File(fileName);
                 if(file1.exists())
                     keyStore.load(new FileInputStream(fileName), password);
                 else
