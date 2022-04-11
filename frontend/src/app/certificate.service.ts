@@ -30,4 +30,8 @@ import { Router } from '@angular/router';
       }
       return this.http.post<any>(this._url + 'api/revokeCertificate', revokeData);
     }
+
+    public getDetails(serialNumber: string){
+      return this.http.get<any>(this._url + 'api/getCertificateDetails/' + serialNumber);
+    }
   }

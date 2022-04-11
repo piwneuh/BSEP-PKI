@@ -21,11 +21,16 @@ export class AdminHomePageComponent implements OnInit {
   }
 
   revokeCertificate(serialNumber: string){
-    this._service.revokeCertificate(serialNumber).subscribe(()=>{this.getAllCertificates();})
+    this._service.revokeCertificate(serialNumber).subscribe(()=>{this.getAllCertificates(); alert("Certificate with serial number: " + serialNumber + " has been revoked!")});
   }
 
   createRedirect(){
     this.router.navigate(['/admin/create']);
+  }
+
+  detailsRedirect(certificate: any){
+    localStorage.setItem('certificate', certificate.serialNumber);
+    this.router.navigate(['/admin/details']);
   }
 
 }

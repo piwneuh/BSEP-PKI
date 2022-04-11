@@ -28,7 +28,7 @@
                         <td>{{c.subject.split(';')[2].slice(4)}}</td>
                         <td>{{c.subject.split(';')[3].slice(3)}}</td>
                         <td><button class="button is-dark" (click)="this.revokeCertificate(c.serialNumber)"> REVOKE </button></td>
-                        <td><button class="button is-dark" (click)="this.revokeCertificate(c.serialNumber)"> DETAILS </button></td>
+                        <td><button class="button is-dark" (click)="detailsRedirect(c)"> DETAILS </button></td>
                     </tr>
                 </tbody>
             </table> 
