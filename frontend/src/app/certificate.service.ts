@@ -34,4 +34,8 @@ import { Router } from '@angular/router';
     public createCertificate(newCertificate: any){
       return this.http.post<any>(this._url + 'api/addNewCertificate', newCertificate);
     }
+    
+    public getDetails(serialNumber: string){
+      return this.http.get<any>(this._url + 'api/getCertificateDetails/' + serialNumber);
+    }
   }
