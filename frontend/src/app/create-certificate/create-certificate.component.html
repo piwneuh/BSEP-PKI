@@ -1,1 +1,88 @@
-<p>create-certificate works!</p>
+  <div class="field">
+      <label class="label">Subject common name</label>
+      <div class="control">
+        <input class="input" type="text" [(ngModel)] = "newCertificate.subjectCommonName">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Subject first name</label>
+      <div class="control">
+        <input class="input" type="text" [(ngModel)] = "newCertificate.subjectFirstName">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Subject last name</label>
+      <div class="control">
+        <input class="input" type="text" [(ngModel)] = "newCertificate.subjectLastName">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Subject email</label>
+      <div class="control">
+        <input class="input" type="text" [(ngModel)] = "newCertificate.subjectEmail">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Subject organization</label>
+      <div class="control">
+        <input class="input" type="text" [(ngModel)] = "newCertificate.subjectOrganization">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Subject organization unit</label>
+      <div class="control">
+        <input class="input" type="text" [(ngModel)] = "newCertificate.subjectOrganizationUnit">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Subject state</label>
+      <div class="control">
+        <input class="input" type="text" [(ngModel)] = "newCertificate.subjectState">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Subject country</label>
+      <div class="control">
+        <input class="input" type="text" [(ngModel)] = "newCertificate.subjectCountry">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Start date</label>
+      <div class="control">
+        <input class="input" type="date" [(ngModel)] = "newCertificate.startDate">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">End date</label>
+      <div class="control">
+        <input class="input" type="date" [(ngModel)] = "newCertificate.endDate">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Issuer serial number</label>
+      <div class="control">
+        <input class="input" type="text" [(ngModel)] = "newCertificate.issuerSerialNumber">
+      </div>
+    </div>
+
+    <div class="control">
+      <div class="select">
+        <select>
+          <option>ROOT</option>
+          <option>INTERMEDIATE</option>
+          <option>END</option>
+        </select>
+      </div>
+    </div>
+
+    <td><button class="button is-dark" (click)="createSertificate()"> CONFIRM </button></td>

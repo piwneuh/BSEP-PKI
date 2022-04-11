@@ -30,4 +30,8 @@ import { Router } from '@angular/router';
       }
       return this.http.post<any>(this._url + 'api/revokeCertificate', revokeData);
     }
+
+    public createCertificate(newCertificate: any){
+      return this.http.post<any>(this._url + 'api/addNewCertificate', newCertificate);
+    }
   }
