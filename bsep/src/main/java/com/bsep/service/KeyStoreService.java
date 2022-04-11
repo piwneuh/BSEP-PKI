@@ -188,7 +188,11 @@ public class KeyStoreService {
     public void loadKeyStore(String fileName, char[] password) {
         try {
             if(fileName != null) {
-                keyStore.load(new FileInputStream(fileName), password);
+                File file1 = new File("keystore/keystoreCA.jks");
+                if(file1.exists())
+                    keyStore.load(new FileInputStream(fileName), password);
+                else
+                    keyStore.load(null, password);
             } else {
                 //Ako je cilj kreirati novi KeyStore poziva se i dalje load, pri cemu je prvi parametar null
                 keyStore.load(null, password);

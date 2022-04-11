@@ -26,14 +26,17 @@ public class CertificatesWriter {
     public void saveCertificate(X509Certificate[] chain, PrivateKey privateKey, String fileLocation, String password) throws CertificateEncodingException {
         String serialNumber = chain[0].getSerialNumber().toString();
         keyStoreService.loadKeyStore(fileLocation, password.toCharArray());
+        keyStoreService.saveKeyStore(fileLocation, password.toCharArray());
+        keyStoreService.loadKeyStore(fileLocation, password.toCharArray());
         keyStoreService.write(serialNumber, privateKey, serialNumber.toCharArray(), chain);
         keyStoreService.saveKeyStore(fileLocation, password.toCharArray());
 
         Enumeration<String> aliases = this.getAllAliases(fileLocation, password);
         System.out.println("Aliases in keystore" + fileLocation + ":");
-        while(aliases.hasMoreElements()){
-            System.out.println(aliases.nextElement());
-        }
+        if(aliases!=null)
+            while(aliases.hasMoreElements()){
+                System.out.println(aliases.nextElement());
+            }
 
         Certificate[] certificateChain = this.keyStoreService.readCertificateChain(fileLocation,password,serialNumber);
         System.out.println("Chain length: " + certificateChain.length); //ispis duzine i elemenata lanca(common name)
