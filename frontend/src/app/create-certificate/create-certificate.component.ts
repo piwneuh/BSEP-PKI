@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Certificate } from '../certificate';
+import { CertificateService } from '../certificate.service';
 
 @Component({
   selector: 'app-create-certificate',
@@ -7,9 +9,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CreateCertificateComponent implements OnInit {
 
-  constructor() { }
+  newCertificate: Certificate = new Certificate()
+
+
+  constructor(private _service: CertificateService) { }
 
   ngOnInit(): void {
   }
+
+  createSertificate(){
+    this._service.createCertificate(this.newCertificate).subscribe()
+  }  
 
 }
