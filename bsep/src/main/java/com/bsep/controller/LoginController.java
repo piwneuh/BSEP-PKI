@@ -24,7 +24,7 @@ public class LoginController {
         if (administrator != null) {
             return ResponseEntity.ok(administrator);
         } else {
-            return ResponseEntity.ok(null);
+            return ResponseEntity.ok(clientService.login(username, password));
         }
     }
 

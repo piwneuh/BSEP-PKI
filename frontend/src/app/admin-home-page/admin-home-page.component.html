@@ -1,1 +1,42 @@
-<p>admin-home-page works!</p>
+<section class="hero is-fullheight is-light">
+    <div class="hero-body has-text-centered">
+        <div class="container">
+        <div class="box">
+            <h1 class="title"> LISTA SVIH SERTIFIKATA </h1>
+            <div class="ap-container" style="height: 700px;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><abbr >Serial Num</abbr></th>
+                        <th><abbr >Start Date</abbr></th>
+                        <th><abbr >End Date</abbr></th>
+                        <th><abbr >Name</abbr></th>
+                        <th><abbr title="Organization">O</abbr></th>
+                        <th><abbr title="Organization Unit">OU</abbr></th>
+                        <th><abbr >Country</abbr></th>
+                        <th></th>
+                        <th></th>
+                      </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let c of certificates">
+                        <td>{{c.serialNumber}}</td>
+                        <td>{{c.startDate}}</td>
+                        <td>{{c.endDate}}</td>
+                        <td>{{c.subject.split(';')[0].slice(3)}}</td>
+                        <td>{{c.subject.split(';')[1].slice(3)}}</td>
+                        <td>{{c.subject.split(';')[2].slice(4)}}</td>
+                        <td>{{c.subject.split(';')[3].slice(3)}}</td>
+                        <td><button class="button is-dark" (click)="this.revokeCertificate(c.serialNumber)"> REVOKE </button></td>
+                        <td><button class="button is-dark" (click)="this.revokeCertificate(c.serialNumber)"> DETAILS </button></td>
+                    </tr>
+                </tbody>
+            </table> 
+        </div>
+        </div>
+        </div>
+    </div>
+    <div>
+        <button class="button is-dark m-5" (click)="createRedirect()">Create New</button>
+    </div>
+</section>
