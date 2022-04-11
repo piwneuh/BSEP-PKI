@@ -8,6 +8,7 @@ import { AdminHomePageComponent } from './admin-home-page/admin-home-page.compon
 import { ClientHomePageComponent } from './client-home-page/client-home-page.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { CreateCertificateComponent } from './create-certificate/create-certificate.component';
 
 
 @NgModule({
@@ -16,6 +17,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
     LoginComponent,
     AdminHomePageComponent,
     ClientHomePageComponent,
+    CreateCertificateComponent,
   ],
   imports: [
     BrowserModule,
