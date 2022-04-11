@@ -1,10 +1,28 @@
 <section class="hero is-fullheight is-light">
     <div class="hero-body has-text-centered">
       <div class="container">
+          <h1 class="title"> CERTIFICATE DETAILS </h1>
         <div class="box">
-            <label>{{certificateData.serialNumber}}</label>
+            <div class="ap-container" style="height: 700px;">
+                <h2 class="subtitle mt-5"><b>Subject:</b> </h2> <hr>
+                <label class="subtitle">Serial Number: {{certificateData.serialNumber}}</label> <br>
+                <label class="subtitle">Algorithm: {{certificateData.signatureAlgorithm}}</label> <br>
+                <label class="subtitle">Hash Algorithm: {{certificateData.signatureHashAlgorithm}}</label> <br>
+                <label class="subtitle">KeyPair Keygen: {{certificateData.publicKey.slice(0, 7)}}</label> <br>
+                <label class="subtitle">Start Date: {{certificateData.startDate}}</label> <br>
+                <label class="subtitle">End Date: {{certificateData.endDate}}</label> <br>
+                <label class="subtitle">Is Root: {{certificateData.isRoot}}</label> <br>
+                <label class="subtitle">Subject Givenname: {{certificateData.subjectGivenname}}</label> <br>
+                <label class="subtitle">Subject Surname: {{certificateData.subjectSurname}}</label> <br>
+                <label class="subtitle">Subject Email: {{certificateData.subjectEmail}}</label> <br>
+                <label class="subtitle">Type: CA </label> <br>
 
-            <label>{{certificateData.issuer}}</label>
+                <h2 class="subtitle mt-5"><b>Issuer:</b> </h2> <hr>
+                <label class="subtitle">Issuer Givenname: {{certificateData.issuerGivenname}}</label> <br>
+                <label class="subtitle">Issuer Surname: {{certificateData.issuerSurname}}</label> <br>
+                <label class="subtitle">Issuer Email: {{certificateData.issuerEmail}}</label> <br>
+                <label class="subtitle">Issuer Serial Number: {{certificateData.issuerSerialNumber}}</label>
+            </div>
         </div>
       </div>
     </div>
