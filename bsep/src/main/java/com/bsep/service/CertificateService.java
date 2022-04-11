@@ -284,19 +284,23 @@ public class CertificateService {
         ArrayList<CertificateBasicDTO> certificateBasicDTOS = new ArrayList<>();
 
         //prolazi kroz elemente keystore-a
-        while (aliases.hasMoreElements()) {
-            Certificate c = certificatesWriter.findCertificateByAlias(aliases.nextElement(), fileLocationCA, passwordCA);
-            JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
-            certificateBasicDTOS.add(new CertificateBasicDTO(certHolder));
+        if(aliases!=null) {
+            while (aliases.hasMoreElements()) {
+                Certificate c = certificatesWriter.findCertificateByAlias(aliases.nextElement(), fileLocationCA, passwordCA);
+                JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
+                certificateBasicDTOS.add(new CertificateBasicDTO(certHolder));
+            }
         }
 
         //Svi end-entity se citaju
-        aliases = certificatesWriter.getAllAliases(fileLocationEE, passwordEE);
+        if(aliases!=null) {
+            aliases = certificatesWriter.getAllAliases(fileLocationEE, passwordEE);
 
-        while (aliases.hasMoreElements()) {
-            Certificate c = certificatesWriter.findCertificateByAlias(aliases.nextElement(), fileLocationEE, passwordEE);
-            JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
-            certificateBasicDTOS.add(new CertificateBasicDTO(certHolder));
+            while (aliases.hasMoreElements()) {
+                Certificate c = certificatesWriter.findCertificateByAlias(aliases.nextElement(), fileLocationEE, passwordEE);
+                JcaX509CertificateHolder certHolder = new JcaX509CertificateHolder((X509Certificate) c);
+                certificateBasicDTOS.add(new CertificateBasicDTO(certHolder));
+            }
         }
         return certificateBasicDTOS;
     }
