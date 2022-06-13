@@ -1,11 +1,7 @@
 package com.bsep.dto;
 
 import com.bsep.model.CertType;
-import com.bsep.model.UserRole;
 import lombok.Data;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 public class CertificateDTO {

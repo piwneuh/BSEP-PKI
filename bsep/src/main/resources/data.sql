@@ -1,8 +1,6 @@
+insert into role(id, name) values (0, 'ROLE_ADMIN');
+insert into role(id, name) values (1, 'ROLE_CLIENT');
 
-insert into administrator (id, username, password, role) values (1, 'aaa', 'aaa', 0);
-insert into administrator (id, username, password, role) values (2, 'bbb', 'bbb', 0);
-insert into administrator (id, username, password, role) values (3, 'ccc', 'ccc', 0);
-
-insert into client (id, username, password, full_name, email, role) values (1, 'mirko', 'jabuka123', 'Mirko Vojinovic', 'aaa@mail.com', 1);
-insert into client (id, username, password, full_name, email, role) values (2, 'mitar', 'jabuka123', 'Mitar Brankovic', 'bbb@mail.com', 1);
-insert into client (id, username, password, full_name, email, role) values (3, 'radisa', 'jabuka123', 'Radisa Milovcevic', 'ccc@mail.com', 1);
+insert into client (id, username, password, full_name, email, role_id) values (1, 'admin', '$2a$12$QZbGfE/NIUWAcxxpT8/o/evBtG5iH/zYWiDuc/MJKpqJilNLRz3iG', 'Mirko Vojinovic', 'aaa@mail.com', 0);
+insert into client (id, username, password, full_name, email, role_id) values (2, 'mitar', '$2a$12$QZbGfE/NIUWAcxxpT8/o/evBtG5iH/zYWiDuc/MJKpqJilNLRz3iG', 'Mitar Brankovic', 'bbb@mail.com', 1);
+insert into client (id, username, password, full_name, email, role_id) values (3, 'radisa', '$2a$12$QZbGfE/NIUWAcxxpT8/o/evBtG5iH/zYWiDuc/MJKpqJilNLRz3iG', 'Radisa Milovcevic', 'ccc@mail.com', 1);
