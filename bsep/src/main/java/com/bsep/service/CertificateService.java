@@ -471,12 +471,12 @@ public class CertificateService {
         os.close();
         /*if(!certificateDto.getAuthoritySubject().equals("ca"))
             return true;*/
-        PrivateKey key = new KeyStoreService().readPrivateKey("keystore/keystoreCA.jks", "passwordCA", "525526383087", "passwordCA");
+        /*PrivateKey key = new KeyStoreService().readPrivateKey("keystoreCA.jks", "passwordCA", "525526383087", "passwordCA");
         os = new FileOutputStream(certificateDto.getSubjectCommonName() + "-key" + ".pem");
         os.write("-----BEGIN PRIVATE KEY-----\n".getBytes(StandardCharsets.US_ASCII));
         os.write(Base64.getEncoder().encode(key.getEncoded()));
         os.write("\n-----END PRIVATE KEY-----\n".getBytes(StandardCharsets.US_ASCII));
-        os.close();
+        os.close();*/
         return true;
     }
 
