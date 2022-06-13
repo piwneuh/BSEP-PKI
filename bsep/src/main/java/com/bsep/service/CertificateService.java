@@ -18,7 +18,9 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.*;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.*;
 import java.security.cert.Certificate;
@@ -451,5 +453,48 @@ public class CertificateService {
                 certificateBasicDTOS.add(new CertificateBasicDTO(certHolder));
         }
         return certificateBasicDTOS;
+    }
+
+    public boolean extractCertificate(CertificateDTO certificateDto) throws CertificateException, IOException {
+        String authority = "";
+        if(certificateDto.getCertificateType().equals(0))
+            authority = "ROOT";
+        if(certificateDto.getCertificateType().equals(1))
+            authority = "INTERMEDIATE";
+        if(certificateDto.getCertificateType().equals(2))
+            authority = "END-ENTITY";
+        X509Certificate certificate = readCertificate("keystore/keystoreCA.jks", "passwordCA", "525526383087");
+        FileOutputStream os = new FileOutputStream(certificateDto.getSubjectCommonName() + ".crt");
+        os.write("-----BEGIN CERTIFICATE-----\n".getBytes(StandardCharsets.US_ASCII));
+        os.write(Base64.getEncoder().encode(certificate.getEncoded()));
+        os.write("\n-----END CERTIFICATE-----\n".getBytes(StandardCharsets.US_ASCII));
+        os.close();
+        /*if(!certificateDto.getAuthoritySubject().equals("ca"))
+            return true;*/
+        PrivateKey key = new KeyStoreService().readPrivateKey("keystore/keystoreCA.jks", "passwordCA", "525526383087", "passwordCA");
+        os = new FileOutputStream(certificateDto.getSubjectCommonName() + "-key" + ".pem");
+        os.write("-----BEGIN PRIVATE KEY-----\n".getBytes(StandardCharsets.US_ASCII));
+        os.write(Base64.getEncoder().encode(key.getEncoded()));
+        os.write("\n-----END PRIVATE KEY-----\n".getBytes(StandardCharsets.US_ASCII));
+        os.close();
+        return true;
+    }
+
+    private X509Certificate readCertificate(String keyStoreFile, String keyStorePass, String alias) {
+        try {
+            KeyStore ks = KeyStore.getInstance("JKS", "SUN");
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
+            ks.load(in, keyStorePass.toCharArray());
+
+            if(ks.isKeyEntry(alias)) {
+                Certificate cert = ks.getCertificate(alias);
+                CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+                InputStream inp = new ByteArrayInputStream(cert.getEncoded());
+                return (X509Certificate)certFactory.generateCertificate(inp);
+            }
+        } catch (KeyStoreException | NoSuchProviderException | NoSuchAlgorithmException | CertificateException | IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

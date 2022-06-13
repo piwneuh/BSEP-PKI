@@ -10,11 +10,16 @@ import com.bsep.service.RevocationService;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateEncodingException;
@@ -71,5 +76,19 @@ public class CertificateController {
     @PostMapping(value="/revokeCertificate", consumes="application/json")
     public ResponseEntity<?> revokeCertificate(@RequestBody RevocationDTO revocationDTO){
         return ResponseEntity.ok(revocationService.revokeCertificate(revocationDTO));
+    }
+
+    @PostMapping("/downloadCertificate")
+    public ResponseEntity<Resource> downloadCertificate(@RequestBody CertificateDTO certificateDTO)
+            throws CertificateException, IOException {
+        certificateService.extractCertificate(certificateDTO);
+        File file = new File(certificateDTO.getSubjectCommonName() + ".crt");
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        file.deleteOnExit();
+
+        return ResponseEntity.ok()
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
     }
 }
