@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
     providedIn: 'root',
   })
   export class CertificateService {
-    private _url = 'http://localhost:8081/';
+    private _url = 'https://localhost:8081/';
     constructor(private http: HttpClient, private router:Router) {}
 
     public login(username: any, password: any){
