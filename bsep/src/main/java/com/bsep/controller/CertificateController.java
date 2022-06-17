@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 @Controller
 @RequestMapping(value = "/api")
-@CrossOrigin(origins = "http://localhost:4200/")
+@CrossOrigin(origins = "https://localhost:4200/")
 public class CertificateController {
 
     @Autowired

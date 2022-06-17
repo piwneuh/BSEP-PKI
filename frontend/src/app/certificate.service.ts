@@ -12,7 +12,11 @@ import { Router } from '@angular/router';
     constructor(private http: HttpClient, private router:Router) {}
 
     public login(username: any, password: any){
-      return this.http.get<any>(this._url + 'login/' + username + '/' + password);
+      let data = {
+        username: username,
+        password: password
+      }
+      return this.http.post<any>(this._url + 'api/auth/login', data);
     }
 
     public getCertificatesByUsername(){

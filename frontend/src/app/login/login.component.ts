@@ -19,14 +19,14 @@ export class LoginComponent implements OnInit {
   }
 
   login(){
-    this.user = this._service.login(this.username, this.password).subscribe(f => {this.user = f; this.setUser()})
+    this.user = this._service.login(this.username, this.password).subscribe(f => {this.user = f.user; this.setUser(f.user)})
     
   }
 
-  setUser(){
-    alert(this.user.role)
-    localStorage.setItem('user', this.user.email);
-    if (this.user.role === "ADMIN"){
+  setUser(user: any){
+    alert(user.username)
+    localStorage.setItem('user', user.email);
+    if (user.role.name === "ROLE_ADMIN"){
       this.router.navigate(['/admin']);
     }
     else {
